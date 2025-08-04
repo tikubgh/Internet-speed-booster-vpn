@@ -1,5 +1,5 @@
 Setup any debian vps server,
-Then setup firwalls, 
+Then setup firewalls, 
 Then final code run in vps terminal,
 Final the ss client code output using Outline
 use your own vps server ip in ss key.
@@ -17,5 +17,6 @@ Run script:
 chmod +x script.sh && ./script.sh
 
 Installation Complete:
+https://outline-vpn.com/download.php?os=c_windows
 Insert this key to Outline client.
 ss://aes-256-gcm:fastpass123@vps-ip-here:443
