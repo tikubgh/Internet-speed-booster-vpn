@@ -20,5 +20,5 @@ chmod +x script.sh && ./script.sh
 
 Installation Complete:
 https://outline-vpn.com/download.php?os=c_windows
-Insert this key to Outline client.
+Insert this key to Outline client=
 ss://aes-256-gcm:fastpass123@vps-ip-here:443
