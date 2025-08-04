@@ -10,7 +10,8 @@ sudo su
 Firewall:
 sudo apt update && sudo apt install ufw -y && sudo ufw allow from any && sudo ufw reload && sudo ufw status verbose && echo "y" | sudo ufw enable
 
-Auto setup Script:
+Download setup Script:
+wget https://raw.githubusercontent.com/tikubgh/Internet-speed-booster-vpn/refs/heads/main/script.sh
 
-
-
+Run script:
+chmod +x script.sh && ./script.sh
