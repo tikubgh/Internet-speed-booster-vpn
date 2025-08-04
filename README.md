@@ -15,3 +15,7 @@ wget https://raw.githubusercontent.com/tikubgh/Internet-speed-booster-vpn/refs/h
 
 Run script:
 chmod +x script.sh && ./script.sh
+
+Installation Complete:
+Insert this key to Outline client.
+ss://aes-256-gcm:fastpass123@vps-ip-here:443
