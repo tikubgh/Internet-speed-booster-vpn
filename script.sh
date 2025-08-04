@@ -45,4 +45,5 @@ AmbientCapabilities=CAP_NET_BIND_SERVICE
 [Install]
 WantedBy=multi-user.target' >/etc/systemd/system/shadowsocks-libev.service&&systemctl daemon-reload&&systemctl enable shadowsocks-libev&&systemctl restart shadowsocks-libev&&sleep 3;systemctl is-active shadowsocks-libev >/dev/null&&echo "Setup complete! Use in Windows Outline client: ss://aes-256-gcm:fastpass123@$p:443"||{ echo "Failed: Service not running"; systemctl status shadowsocks-libev; exit 1; };netstat -tuln|grep :443&&echo "Server running on 443"||{ echo "Failed: Port 443 not open"; netstat -tulnp|grep :443; exit 1; }
 EOF
+
 bash setup.sh
