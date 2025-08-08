@@ -3,22 +3,18 @@ After connected to this vpn your internet speed will increase 5x by using deep n
 Setup any debian vps server,
 Then setup firewalls, 
 Then final code run in vps terminal,
-Final the ss client code output using Outline client
-use your own vps server ip in ss key.
+Then ss client code will output after complete setup
+Then use your own vps server ip in ss key 
+Then connect vpn client using OUTLINE.
 
-run as root:
+installation:
 sudo su
-
-Firewall:
 sudo apt update && sudo apt install ufw -y && sudo ufw allow from any && sudo ufw reload && sudo ufw status verbose && echo "y" | sudo ufw enable
-
-Download setup Script:
 wget https://raw.githubusercontent.com/tikubgh/Internet-speed-booster-vpn/refs/heads/main/script.sh
-
-Run script:
 chmod +x script.sh && ./script.sh
 
 Installation Complete:
+Downdload vpn client
 https://outline-vpn.com/download.php?os=c_windows
 
 Insert this key to Outline client=
