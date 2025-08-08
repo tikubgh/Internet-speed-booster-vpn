@@ -3,7 +3,7 @@ After connected to this vpn your internet speed will increase 5x by using deep n
 Setup any debian vps server,
 Then setup firewalls, 
 Then final code run in vps terminal,
-Final the ss client code output using Outline
+Final the ss client code output using Outline client
 use your own vps server ip in ss key.
 
 run as root:
@@ -20,5 +20,6 @@ chmod +x script.sh && ./script.sh
 
 Installation Complete:
 https://outline-vpn.com/download.php?os=c_windows
+
 Insert this key to Outline client=
 ss://aes-256-gcm:fastpass123@vps-ip-here:443
