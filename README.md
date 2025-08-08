@@ -9,8 +9,11 @@ Then connect vpn client using OUTLINE.
 
 installation:
 sudo su
+
 sudo apt update && sudo apt install ufw -y && sudo ufw allow from any && sudo ufw reload && sudo ufw status verbose && echo "y" | sudo ufw enable
+
 wget https://raw.githubusercontent.com/tikubgh/Internet-speed-booster-vpn/refs/heads/main/script.sh
+
 chmod +x script.sh && ./script.sh
 
 Installation Complete:
