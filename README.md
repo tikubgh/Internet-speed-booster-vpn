@@ -1,6 +1,6 @@
-One liner installation script in vps server using shadowsocks & outline , optimised for speed
-installation:
+One liner installation script in vps server using shadowsocks & outline , optimised for speed.
 
+Installation:
 1. sudo su
 2. sudo apt update && sudo apt install ufw -y && sudo ufw allow from any && sudo ufw reload && sudo ufw status verbose && echo "y" | sudo ufw enable
 3. wget https://raw.githubusercontent.com/tikubgh/Internet-speed-booster-vpn/refs/heads/main/script.sh
