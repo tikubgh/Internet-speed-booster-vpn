@@ -7,6 +7,7 @@ installation:
 4. chmod +x script.sh && ./script.sh
    
 Installation Complete: Downdload vpn client https://outline-vpn.com/download.php?os=c_windows
+
 Insert this key to Outline client= ss://aes-256-gcm:fastpass123@vps-ip-here:443
 SS client code will output after complete setup then use your own vps server ip in ss key then connect vpn client using OUTLINE
 Enjoy...
