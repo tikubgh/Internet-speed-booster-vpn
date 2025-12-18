@@ -2,7 +2,7 @@ rm setup.sh
 cat > setup.sh << 'EOF'
 #!/bin/bash
 set -e
-p=144.24.101.44;apt update -y&&apt install -y shadowsocks-libev libcap2-bin iptables net-tools&&setcap 'cap_net_bind_service=+ep' /usr/bin/ss-server;useradd -r -s /sbin/nologin -M shadowsocks 2>/dev/null||true;mkdir -p /etc/shadowsocks-libev&&chown shadowsocks:shadowsocks /etc/shadowsocks-libev&&echo '{"server":"0.0.0.0","server_port":443,"password":"fastpass123","method":"aes-256-gcm","timeout":5,"fast_open":true,"tcp_nodelay":true,"workers":'$(nproc)'}' >/etc/shadowsocks-libev/config.json&&chmod 600 /etc/shadowsocks-libev/config.json&&chown shadowsocks:shadowsocks /etc/shadowsocks-libev/config.json;echo 'net.ipv4.tcp_fastopen=3
+p=$(curl -s ifconfig.me);apt update -y&&apt install -y shadowsocks-libev libcap2-bin iptables net-tools&&setcap 'cap_net_bind_service=+ep' /usr/bin/ss-server;useradd -r -s /sbin/nologin -M shadowsocks 2>/dev/null||true;mkdir -p /etc/shadowsocks-libev&&chown shadowsocks:shadowsocks /etc/shadowsocks-libev&&echo '{"server":"0.0.0.0","server_port":443,"password":"fastpass123","method":"aes-256-gcm","timeout":5,"fast_open":true,"tcp_nodelay":true,"workers":'$(nproc)'}' >/etc/shadowsocks-libev/config.json&&chmod 600 /etc/shadowsocks-libev/config.json&&chown shadowsocks:shadowsocks /etc/shadowsocks-libev/config.json;echo 'net.ipv4.tcp_fastopen=3
 net.core.rmem_max=268435456
 net.core.wmem_max=268435456
 net.ipv4.tcp_rmem=4096 33554432 268435456
