@@ -1,10 +1,11 @@
 One liner installation script in vps server using shadowsocks & outline , optimised for speed.
 
-Installation:
-1. sudo su
-2. sudo apt update && sudo apt install ufw -y && sudo ufw allow from any && sudo ufw reload && sudo ufw status verbose && echo "y" | sudo ufw enable
-3. wget https://raw.githubusercontent.com/tikubgh/Internet-speed-booster-vpn/refs/heads/main/script.sh
-4. chmod +x script.sh && ./script.sh
+## 🚀 Installation: Debian 13
+
+- sudo su
+- sudo apt update && sudo apt install ufw -y && sudo ufw allow from any && sudo ufw reload && sudo ufw status verbose && echo "y" | sudo ufw enable
+- wget https://raw.githubusercontent.com/tikubgh/Internet-speed-booster-vpn/refs/heads/main/script.sh
+- chmod +x script.sh && ./script.sh
    
 Installation Complete: Downdload vpn client https://outline-vpn.com/download.php?os=c_windows
 
