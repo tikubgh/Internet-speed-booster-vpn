@@ -1,43 +1,63 @@
-cat > setup_outline_max.sh << 'EOF'
+cat > setup_outline_final.sh << 'EOF'
 #!/bin/bash
 set -e
 
-echo "Starting Maximum Aggression Shadowsocks Setup for Outline..."
+echo "Starting Final Outline Optimization (Port Evasion + UDP Priority)..."
 
-# 1. Set Your Fixed Password Here
+# 1. Set Fixed Password & New Port
 STATIC_PASSWORD="fastpass123"
+SERVER_PORT="8443"
 SERVER_IP=$(curl -s -4 ifconfig.me)
 
-# 2. Install Core Dependencies
+# 2. Clean Slate (Remove all previous shadowsocks installations to prevent conflicts)
+systemctl stop shadowsocks-rust 2>/dev/null || true
+systemctl disable shadowsocks-rust 2>/dev/null || true
+rm -rf /usr/local/bin/ssserver /etc/shadowsocks-rust /etc/systemd/system/shadowsocks-rust.service
+
+# 3. Install core utilities
 apt update -y
-DEBIAN_FRONTEND=noninteractive apt install -y shadowsocks-libev libcap2-bin iptables net-tools iptables-persistent
+DEBIAN_FRONTEND=noninteractive apt install -y wget curl tar jq iptables net-tools iptables-persistent xz-utils
 
-# 3. Allow ss-server root-level network binding
-setcap 'cap_net_bind_service=+ep' /usr/bin/ss-server
-useradd -r -s /sbin/nologin -M shadowsocks 2>/dev/null || true
+# 4. Download Rust Engine (Auto-detect architecture)
+ARCH=$(uname -m)
+if [ "$ARCH" = "x86_64" ]; then
+    RUST_URL="https://github.com/shadowsocks/shadowsocks-rust/releases/download/v1.18.2/shadowsocks-v1.18.2.x86_64-unknown-linux-gnu.tar.xz"
+elif [ "$ARCH" = "aarch64" ]; then
+    RUST_URL="https://github.com/shadowsocks/shadowsocks-rust/releases/download/v1.18.2/shadowsocks-v1.18.2.aarch64-unknown-linux-gnu.tar.xz"
+fi
 
-# 4. Configure Shadowsocks (Optimized for Outline)
-mkdir -p /etc/shadowsocks-libev
-cat > /etc/shadowsocks-libev/config.json << EOF_JSON
+wget -qO ss-rust.tar.xz "$RUST_URL"
+tar -xf ss-rust.tar.xz -C /usr/local/bin/ ssserver
+rm ss-rust.tar.xz
+chmod +x /usr/local/bin/ssserver
+setcap 'cap_net_bind_service=+ep' /usr/local/bin/ssserver
+
+# 5. Create Configuration on Evaded Port (8443)
+mkdir -p /etc/shadowsocks-rust
+cat > /etc/shadowsocks-rust/config.json << EOF_JSON
 {
-    "server":"0.0.0.0",
-    "server_port":443,
-    "password":"$STATIC_PASSWORD",
-    "method":"chacha20-ietf-poly1305",
-    "timeout":300,
-    "fast_open":true,
-    "tcp_nodelay":true,
-    "workers":$(nproc)
+    "server": "0.0.0.0",
+    "server_port": $SERVER_PORT,
+    "password": "$STATIC_PASSWORD",
+    "method": "chacha20-ietf-poly1305",
+    "mode": "tcp_and_udp",
+    "fast_open": true,
+    "no_delay": true
 }
 EOF_JSON
-chown -R shadowsocks:shadowsocks /etc/shadowsocks-libev
-chmod 600 /etc/shadowsocks-libev/config.json
 
-# 5. Ultra-Advanced Kernel Tuning for Single-Connection Speed
-# Removed the invalid tcp_nodelay rule. The rest are highly optimized for cloud VPS environments.
-cat > /etc/sysctl.d/99-shadowsocks-max.conf << EOF_SYSCTL
+# 6. Final Kernel Tuning (Adding Aggressive UDP parameters for Gaming)
+cat > /etc/sysctl.d/99-shadowsocks-final.conf << EOF_SYSCTL
 net.core.default_qdisc=fq
 net.ipv4.tcp_congestion_control=bbr
+
+# UDP Optimizations for COD Mobile
+net.ipv4.udp_rmem_min=8192
+net.ipv4.udp_wmem_min=8192
+net.core.rmem_default=262144
+net.core.wmem_default=262144
+
+# TCP Optimizations
 net.ipv4.tcp_fastopen=3
 net.ipv4.tcp_mtu_probing=1
 net.ipv4.tcp_base_mss=1024
@@ -47,65 +67,55 @@ net.core.rmem_max=33554432
 net.core.wmem_max=33554432
 net.ipv4.tcp_rmem=4096 87380 33554432
 net.ipv4.tcp_wmem=4096 65536 33554432
-net.core.netdev_max_backlog=100000
 net.core.somaxconn=65535
-net.ipv4.tcp_max_syn_backlog=65535
 net.ipv4.tcp_tw_reuse=1
 net.ipv4.tcp_fin_timeout=15
 net.ipv4.tcp_slow_start_after_idle=0
-net.ipv4.tcp_no_metrics_save=1
 EOF_SYSCTL
-sysctl -p /etc/sysctl.d/99-shadowsocks-max.conf
+sysctl -p /etc/sysctl.d/99-shadowsocks-final.conf
 modprobe tcp_bbr 2>/dev/null || true
 
-# 6. Persistent Firewall Rules (TCP & UDP)
+# 7. Persistent Firewall Rules for the new port
+iptables -F
 iptables -A INPUT -p tcp --dport 22 -j ACCEPT
 iptables -A OUTPUT -p tcp --sport 22 -j ACCEPT
-iptables -A INPUT -p tcp --dport 443 -j ACCEPT
-iptables -A OUTPUT -p tcp --sport 443 -j ACCEPT
-iptables -A INPUT -p udp --dport 443 -j ACCEPT
-iptables -A OUTPUT -p udp --sport 443 -j ACCEPT
+iptables -A INPUT -p tcp --dport $SERVER_PORT -j ACCEPT
+iptables -A OUTPUT -p tcp --sport $SERVER_PORT -j ACCEPT
+iptables -A INPUT -p udp --dport $SERVER_PORT -j ACCEPT
+iptables -A OUTPUT -p udp --sport $SERVER_PORT -j ACCEPT
 netfilter-persistent save >/dev/null 2>&1
 
-# 7. Systemd Service with UDP Relay Enabled (-u)
-cat > /etc/systemd/system/shadowsocks-libev.service << EOF_SYSTEMD
+# 8. Setup Systemd Service
+cat > /etc/systemd/system/shadowsocks-rust.service << EOF_SYSTEMD
 [Unit]
-Description=Shadowsocks-libev Outline Server
+Description=Shadowsocks-Rust Final
 After=network.target
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/ss-server -c /etc/shadowsocks-libev/config.json -u
+ExecStart=/usr/local/bin/ssserver -c /etc/shadowsocks-rust/config.json
 Restart=always
 RestartSec=3
-User=shadowsocks
-Group=shadowsocks
 LimitNOFILE=1048576
-CapabilityBoundingSet=CAP_NET_BIND_SERVICE
-AmbientCapabilities=CAP_NET_BIND_SERVICE
 
 [Install]
 WantedBy=multi-user.target
 EOF_SYSTEMD
 
-# 8. Start Service
 systemctl daemon-reload
-systemctl enable shadowsocks-libev
-systemctl restart shadowsocks-libev
+systemctl enable shadowsocks-rust
+systemctl restart shadowsocks-rust
 sleep 2
 
-# 9. Output Static Outline Link
-if systemctl is-active --quiet shadowsocks-libev; then
+# 9. Output New Link
+if systemctl is-active --quiet shadowsocks-rust; then
     echo -e "\n=================================================================="
-    echo -e "✅ MAX SPEED OUTLINE SETUP COMPLETE"
+    echo -e "✅ FINAL EVASION SETUP COMPLETE"
     echo -e "=================================================================="
     echo -e "Copy this URL and paste it into Outline Client:"
-    echo -e "\nss://chacha20-ietf-poly1305:${STATIC_PASSWORD}@${SERVER_IP}:443\n"
+    echo -e "\nss://chacha20-ietf-poly1305:${STATIC_PASSWORD}@${SERVER_IP}:${SERVER_PORT}\n"
     echo -e "=================================================================="
-else
-    echo "❌ Failed: Service is not running."
-    journalctl -u shadowsocks-libev --no-pager | tail -n 10
 fi
 EOF
 
-bash setup_outline_max.sh
+bash setup_outline_final.sh
